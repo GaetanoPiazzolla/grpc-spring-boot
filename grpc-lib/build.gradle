@@ -1,0 +1,70 @@
+plugins {
+    id "java"
+    id "idea"
+    id "maven-publish"
+    id "com.google.protobuf" version "0.8.12"
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+wrapper {
+    gradleVersion = '7.0'
+}
+
+group "gae.piaz"
+version "1.0"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+dependencies {
+    implementation 'io.grpc:grpc-netty-shaded:1.40.1'
+    implementation 'io.grpc:grpc-protobuf:1.40.1'
+    implementation 'io.grpc:grpc-stub:1.40.1'
+    if (JavaVersion.current().isJava9Compatible()) {
+        // Workaround for @javax.annotation.Generated
+        // see: https://github.com/grpc/grpc-java/issues/3633
+        implementation 'jakarta.annotation:jakarta.annotation-api:1.3.5'
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.2"
+    }
+    generatedFilesBaseDir = "$projectDir/src/generated"
+    clean {
+        delete generatedFilesBaseDir
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.40.1'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file('src/generated/main/java')
+        sourceDirs += file('src/generated/main/grpc')
+        generatedSourceDirs += file('src/generated/main/java')
+        generatedSourceDirs += file('src/generated/main/grpc')
+    }
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'gae.piaz'
+            artifactId = 'grpc-lib'
+            version = '1.1'
+            from components.java
+        }
+    }
+}
