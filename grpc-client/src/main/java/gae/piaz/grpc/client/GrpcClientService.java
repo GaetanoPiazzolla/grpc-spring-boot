@@ -30,7 +30,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 @Service
 public class GrpcClientService {
 
-    @GrpcClient("local-grpc-server")
+    @GrpcClient("grpc-server")
     private SimpleGrpc.SimpleBlockingStub simpleStub;
 
     public String sendMessage(final String name) {

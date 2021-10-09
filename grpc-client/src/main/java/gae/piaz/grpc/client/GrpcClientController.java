@@ -28,7 +28,6 @@ public class GrpcClientController {
     @Autowired
     private GrpcClientService grpcClientService;
 
-
     @RequestMapping("/")
     public String printMessage(@RequestParam(defaultValue = "Tano") String name) {
         return grpcClientService.sendMessage(name);
